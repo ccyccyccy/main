@@ -7,39 +7,31 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class TimeRange implements Comparable<TimeRange> {
-    private final DayOfWeek dayStart;
-    private final DayOfWeek dayEnd;
-    private final LocalTime timeStart;
-    private final LocalTime timeEnd;
+    private final WeekTime start;
+    private final WeekTime end;
+
+    public TimeRange(WeekTime start, WeekTime end) throws IllegalValueException {
+        if (!rangeIsValid(start, end)) {
+            throw new IllegalValueException("start should be earlier than end");
+        }
+        this.start = start;
+        this.end = end;
+    }
 
     public TimeRange(DayOfWeek dayStart, DayOfWeek dayEnd, LocalTime timeStart, LocalTime timeEnd) throws IllegalValueException {
-        if (!rangeIsValid(timeStart, timeEnd)) {
-            throw new IllegalValueException("timeStart should be earlier than timeEnd");
-        }
-        this.dayStart = dayStart;
-        this.dayEnd = dayEnd;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
+        this(new WeekTime(dayStart, timeStart), new WeekTime(dayEnd, timeEnd));
     }
 
     public int getDurationInHours() {
-        return (dayEnd.getValue() - dayStart.getValue()) * 24 + timeEnd.getHour() - timeStart.getHour();
+        return end.getHourDifference(start);
     }
 
-    public DayOfWeek getDayStart() {
-        return dayStart;
+    public WeekTime getStart() {
+        return start;
     }
 
-    public DayOfWeek getDayEnd() {
-        return dayEnd;
-    }
-
-    public LocalTime getTimeStart() {
-        return timeStart;
-    }
-
-    public LocalTime getTimeEnd() {
-        return timeEnd;
+    public WeekTime getEnd() {
+        return end;
     }
 
     @Override
@@ -51,14 +43,13 @@ public class TimeRange implements Comparable<TimeRange> {
             return false;
         }
         TimeRange timeRange = (TimeRange) o;
-        return dayStart == timeRange.dayStart
-                && timeStart.equals(timeRange.timeStart)
-                && timeEnd.equals(timeRange.timeEnd);
+        return start.equals(timeRange.start)
+                && end.equals(timeRange.end);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dayStart, dayEnd, timeStart, timeEnd);
+        return Objects.hash(start, end);
     }
 
     /**
@@ -68,19 +59,14 @@ public class TimeRange implements Comparable<TimeRange> {
      */
     @Override
     public int compareTo(TimeRange other) {
-        if (this.dayStart.getValue() != other.dayStart.getValue()) {
-            return this.dayStart.getValue() - other.dayStart.getValue();
-        }
-        return this.timeStart.compareTo(other.timeStart);
+        return this.start.getHourDifference(other.start);
     }
 
     public boolean overlap(TimeRange timeRange) {
-        return this.getDayStart() == timeRange.getDayStart()
-                && this.timeStart.compareTo(timeRange.getTimeEnd()) < 0
-                && this.timeEnd.compareTo(timeRange.getTimeStart()) > 0;
+        return this.start.compareTo(timeRange.end) < 0 && this.end.compareTo(timeRange.start) > 0;
     }
 
-    private static boolean rangeIsValid(LocalTime start, LocalTime end) {
+    private static boolean rangeIsValid(WeekTime start, WeekTime end) {
         return start.compareTo(end) < 0;
     }
 }

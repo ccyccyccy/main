@@ -33,14 +33,14 @@ public class GenerateSlot {
                 continue;
             }
             TimeRange latest = merged.get(merged.size() - 1);
-            if (latest.getTimeEnd().compareTo(timeRange.getTimeStart()) >= 0) { // If last TimeRange in merged overlaps with new latest
+            if (latest.overlap(timeRange)) { // If last TimeRange in merged overlaps with new latest
                 TimeRange tr = merge(timeRange, latest);
                 merged.set(merged.size() - 1, tr);
             } else {
                 merged.add(timeRange);
             }
         }
-        return null;
+        return merged;
     }
 
     /**
@@ -51,44 +51,33 @@ public class GenerateSlot {
      * @throws IllegalValueException If error in creating new TimeRange.
      */
     private static TimeRange merge(TimeRange r1, TimeRange r2) throws IllegalValueException {
-        return new TimeRange(r1.getDayStart(), r2.getDayEnd(), r1.getTimeStart(), r2.getTimeEnd());
+        return new TimeRange(r1.getStart().isBefore(r2.getStart()) ? r1.getStart() : r2.getStart(), r1.getEnd().isAfter(r2.getEnd()) ? r1.getEnd() : r2.getEnd());
     }
 
     public static List<TimeRange> invertTimeRange(List<TimeRange> timeRanges) throws IllegalValueException {
         // Start from MONDAY 0000, to SUNDAY 2359
         List<TimeRange> inverted = new ArrayList<>();
         DayOfWeek curDay = DayOfWeek.MONDAY;
-        LocalTime curTime = LocalTime.parse("0000");
+        LocalTime curTime = LocalTime.parse("00:00");
+        WeekTime cur = new WeekTime(curDay, curTime);
         for (TimeRange timeRange : timeRanges) {
-            TimeRange toAdd = new TimeRange(curDay, timeRange.getDayStart(), curTime, timeRange.getTimeStart());
+            TimeRange toAdd = new TimeRange(cur, timeRange.getStart());
             inverted.add(toAdd);
-            curDay = timeRange.getDayEnd();
-            curTime = timeRange.getTimeEnd();
+            cur = timeRange.getEnd();
         }
-        inverted.add(new TimeRange(curDay, DayOfWeek.SUNDAY, curTime, LocalTime.parse("2359")));
+        inverted.add(new TimeRange(cur.getDay(), DayOfWeek.SUNDAY, cur.getTime(), LocalTime.parse("23:59")));
         return inverted;
     }
 
     public static List<TimeRange> truncateTimeRange(List<TimeRange> timeRanges, TimeRange limit) throws IllegalValueException {
         List<TimeRange> truncated = new ArrayList<>();
         for (TimeRange timeRange : timeRanges) {
-            if (timeRange.getTimeEnd().compareTo(limit.getTimeStart()) <= 0 // End before before start
-                    || timeRange.getTimeStart().compareTo(limit.getTimeEnd()) >= 0) { // Start after end
+            if (!timeRange.overlap(limit)) { // Start after end
                 continue;
             }
-            LocalTime timeStart = timeRange.getTimeStart().isBefore(limit.getTimeStart())
-                    ? limit.getTimeStart()
-                    : timeRange.getTimeStart();
-            DayOfWeek dayStart = timeRange.getDayStart().getValue() < limit.getDayStart().getValue()
-                    ? limit.getDayStart()
-                    : timeRange.getDayStart();
-            LocalTime timeEnd = timeRange.getTimeEnd().isAfter(limit.getTimeEnd())
-                    ? limit.getTimeEnd()
-                    : timeRange.getTimeEnd();
-            DayOfWeek dayEnd = timeRange.getDayEnd().getValue() > limit.getDayEnd().getValue()
-                    ? limit.getDayEnd()
-                    : timeRange.getDayEnd();
-            truncated.add(new TimeRange(dayStart, dayEnd, timeStart, timeEnd));
+            WeekTime start = timeRange.getStart().isBefore(limit.getStart()) ? limit.getStart() : timeRange.getStart();
+            WeekTime end = timeRange.getEnd().isAfter(limit.getEnd()) ? limit.getEnd() : timeRange.getEnd();
+            truncated.add(new TimeRange(start, end));
         }
         return truncated;
     }
