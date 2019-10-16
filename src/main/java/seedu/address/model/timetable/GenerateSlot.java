@@ -9,7 +9,6 @@ import java.util.*;
 public class GenerateSlot {
     public static List<TimeRange> generate(List<TimeTable> timeTables, int numberOfHours, TimeRange userSpecifiedTimeRange) throws IllegalValueException {
         List<TimeRange> uniqueTimeRanges = filterUniqueTimeRanges(timeTables);
-        // TODO: Add algorithm to generate timing from the timeRanges
         List<TimeRange> merged = mergeOverlappingTimeRanges(uniqueTimeRanges);
         List<TimeRange> inverted = invertTimeRange(merged);
         List<TimeRange> truncated = truncateTimeRange(inverted, userSpecifiedTimeRange);

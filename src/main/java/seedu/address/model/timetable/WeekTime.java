@@ -58,4 +58,9 @@ public class WeekTime implements Comparable<WeekTime> {
     public boolean isBefore(WeekTime weekTime) {
         return this.compareTo(weekTime) < 0;
     }
+
+    @Override
+    public String toString() {
+        return this.day.toString() + " " + this.time.toString();
+    }
 }
