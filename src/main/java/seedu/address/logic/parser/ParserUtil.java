@@ -29,7 +29,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
