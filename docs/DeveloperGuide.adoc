@@ -1259,7 +1259,6 @@ Expected: No tasks are assigned and error message for invalid format is shown.
 .. Other incorrect `assignTask` commands to try: `assignTask 2000 1` (this should be an incorrect task index specified) +
 `assignTask -1 2 3` (this is an incorrect format as indexes should be positive).
 
-
 === Set timetable to person
 
 .. Test case: `setTimetable 1 n/https://nusmods.com/timetable/sem-1/share?CS2100=LAB:05,TUT:02,LEC:1&CS2101=&CS2103T=LEC:G13&CS2105=TUT:03,LEC:1&CS3241=TUT:05,LEC:1&CS3243=TUT:01,LEC:1&GEQ1000=TUT:D27` +
@@ -1280,7 +1279,6 @@ Expected: Unable to generate any time slots.
 
 .. Other test cases to try out
 ... Other timetables added to other members in the same project, and use generate command.
-
 
 === Saving data
 
