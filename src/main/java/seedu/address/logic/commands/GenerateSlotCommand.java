@@ -83,7 +83,8 @@ public class GenerateSlotCommand extends Command {
             if (allMembersAvailable) {
                 return new CommandResult(String.format(MESSAGE_SUCCESS, formattedResult), COMMAND_WORD);
             } else {
-                return new CommandResult(String.format(MESSAGE_SUCCESS_WITH_MEMBERS_UNAVAILABLE, members.stream().map(x -> x.getName().toString()).collect(Collectors.joining(" ")), formattedResult), COMMAND_WORD);
+                String membersAvailable = members.stream().map(x -> x.getName().toString()).collect(Collectors.joining(" "));
+                return new CommandResult(String.format(MESSAGE_SUCCESS_WITH_MEMBERS_UNAVAILABLE, membersAvailable, formattedResult), COMMAND_WORD);
             }
         } catch (IllegalValueException e) {
             throw new CommandException(MESSAGE_UNKNOWN_ERROR);
