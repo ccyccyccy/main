@@ -1260,6 +1260,14 @@ Expected: No tasks are assigned and error message for invalid format is shown.
 `assignTask -1 2 3` (this is an incorrect format as indexes should be positive).
 
 
+=== Set timetable to person
+
+.. Test case: `setTimetable 1 n/https://nusmods.com/timetable/sem-1/share?CS2100=LAB:05,TUT:02,LEC:1&CS2101=&CS2103T=LEC:G13&CS2105=TUT:03,LEC:1&CS3241=TUT:05,LEC:1&CS3243=TUT:01,LEC:1&GEQ1000=TUT:D27` +
+Expected: Data is fetch from the internet and added successfully. Scroll down on the result box to view visualization of timetable set.
+
+.. `setTimetable 1 n/https://nusmods.com/timetable/sem-1/share?CS2100=LAB:05,TUT:02,LEC:1&CS2101=&CS2103T=LEC:G13&CS2105=TUT:03,LEC:1&CS3241=TUT:05,LEC:1&CS3243=TUT:01,LEC:1&GEQ1000=TUT:D1` +
+Expected: Error message should show due to invalid URL. System should pinpoint which module is invalid on the URL
+
 === Saving data
 
 . Dealing with missing/corrupted data files
